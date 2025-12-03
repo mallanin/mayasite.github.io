@@ -3,24 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Welcome</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="login-page" class="container">
-        <div class="login-wrapper">
-            <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Enter..." autofocus>
-            <div id="error-msg" class="hidden">Incorrect</div>
+    <!-- BACKGROUND: The moving mesh gradient -->
+    <div class="gradient-bg">
+        <div class="gradients-container">
+            <div class="g1"></div>
+            <div class="g2"></div>
+            <div class="g3"></div>
+            <div class="g4"></div>
         </div>
     </div>
 
-    <div id="content-page" class="container hidden">
-        <button id="back-btn">← Back</button>
-        <textarea placeholder="test"></textarea>
-    </div>
+    <!-- PAGE 1: LOGIN -->
+    <section id="login-page" class="glass-panel">
+        <h1 class="title">Hello.</h1>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Password" autocomplete="off">
+            <button id="enter-btn">→</button>
+        </div>
+        <p id="error-msg">Try again</p>
+    </section>
+
+    <!-- PAGE 2: CONTENT -->
+    <section id="content-page" class="hidden">
+        <nav class="glass-nav">
+            <button id="back-btn">← Back</button>
+            <span>My Content</span>
+        </nav>
+
+        <div class="content-container glass-panel-large">
+            <h2>Welcome In</h2>
+            <p>This is the secure area.</p>
+
+            <!-- IMAGE AREA -->
+            <!-- 
+               INSTRUCTIONS: 
+               1. Upload your photo to GitHub.
+               2. Change "my-photo.jpg" below to your file name.
+               3. If you have multiple photos, copy and paste the <img ...> line.
+            -->
+            
+            <div class="image-gallery">
+                <!-- Example Image Placeholder (Remove this line once you have a real photo) -->
+                <div class="placeholder-box">Upload photo to GitHub to see it here</div>
+
+                <!-- YOUR PHOTO CODE GOES HERE: -->
+                <!-- <img src="my-photo.jpg" class="gallery-img" alt="My Photo"> -->
+            </div>
+            
+            <textarea placeholder="Write something here..."></textarea>
+        </div>
+    </section>
 
     <script src="script.js"></script>
 </body>
 </html>
+```eor
+
+### 2. `style.css`
+This CSS creates the high-end "Apple Wallet" style gradient animation and the frosted glass effect.
