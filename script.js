@@ -9,7 +9,7 @@
 body {
     height: 100vh;
     width: 100vw;
-    overflow: hidden; /* Prevents scrollbars on the main window */
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,23 +17,24 @@ body {
 
 /* --- ANIMATED MESH GRADIENT BACKGROUND --- */
 .gradient-bg {
-    position: absolute;
+    position: fixed; /* Fixed to cover screen even on scroll */
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #fceceb; /* Fallback */
+    background-color: #fceceb;
     z-index: -1;
     overflow: hidden;
 }
 
 .gradients-container {
-    filter: blur(80px); /* This blends the colors together smoothly */
+    filter: blur(80px);
     width: 100%;
     height: 100%;
+    position: relative;
 }
 
-/* We create 4 moving blobs of color */
+/* Moving blobs */
 .g1, .g2, .g3, .g4 {
     position: absolute;
     border-radius: 50%;
@@ -41,7 +42,6 @@ body {
     animation: move 20s infinite alternate;
 }
 
-/* Orange/Red */
 .g1 {
     background: radial-gradient(circle, #ffafbd 0%, #ffc3a0 100%);
     width: 80%; height: 80%;
@@ -49,7 +49,6 @@ body {
     animation-duration: 18s;
 }
 
-/* Purple/Blue */
 .g2 {
     background: radial-gradient(circle, #cc2b5e 0%, #753a88 100%);
     width: 60%; height: 60%;
@@ -59,7 +58,6 @@ body {
     animation-direction: alternate-reverse;
 }
 
-/* Yellow/Green mix */
 .g3 {
     background: radial-gradient(circle, #fce38a 0%, #f38181 100%);
     width: 50%; height: 50%;
@@ -72,87 +70,107 @@ body {
     to { transform: translate(10%, 10%) rotate(20deg); }
 }
 
-/* --- GLASSMORPHISM UI --- */
+/* --- GLASS UI --- */
 .glass-panel {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 24px;
-    padding: 50px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    /* Minimal glass background for the container itself */
+    background: rgba(255, 255, 255, 0.1); 
+    padding: 20px;
+    border-radius: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 320px;
+    justify-content: center;
     transition: all 0.4s ease;
 }
 
-.title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 30px;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+.centered-panel {
+    /* Only applied to login page to center it perfectly */
+    position: absolute;
 }
 
-.input-group {
-    position: relative;
-    width: 100%;
-}
-
-input {
-    width: 100%;
+/* --- INPUT & BUTTON STYLES (SHARED) --- */
+/* This style is now shared by the password box and the back button */
+input, #back-btn {
+    width: 280px;
     padding: 15px 20px;
-    border-radius: 15px;
-    border: none;
-    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     font-size: 1.1rem;
     color: #333;
     outline: none;
     transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    cursor: pointer; /* Cursor for button */
 }
 
-input:focus {
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+/* Remove default button styling for back button to match input */
+#back-btn {
+    display: inline-block;
+    color: #444;
+    font-weight: 500;
+}
+
+/* Focus / Hover States */
+input:focus, #back-btn:hover {
+    background: rgba(255, 255, 255, 0.55);
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    transform: scale(1.02);
+}
+
+/* Arrow Button inside Input */
+.input-group {
+    position: relative;
 }
 
 #enter-btn {
     position: absolute;
     right: 5px;
-    top: 5px;
-    height: 40px;
-    width: 40px;
-    border-radius: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
     border: none;
-    background: #333;
+    background: rgba(0, 0, 0, 0.8);
     color: white;
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.2s;
+    opacity: 0.8;
+    transition: 0.2s;
 }
 
 #enter-btn:hover {
-    transform: scale(1.05);
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
 }
 
+/* Error Message */
 #error-msg {
-    color: #890b0b;
+    color: #a50e0e;
     margin-top: 15px;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 0.9rem;
-    opacity: 0; /* Hidden by default */
+    
+    /* Hidden by default */
+    visibility: hidden; 
+    opacity: 0;
     transform: translateY(-5px);
     transition: all 0.3s;
+    height: 20px; /* Reserve height to prevent jumping */
 }
 
 #error-msg.visible {
+    visibility: visible;
     opacity: 1;
     transform: translateY(0);
 }
 
-/* SHAKE ANIMATION */
+/* Shake Animation */
 .shake {
     animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
 }
@@ -164,7 +182,7 @@ input:focus {
     40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
-/* --- PAGE 2 CONTENT --- */
+/* --- PAGE 2 SPECIFICS --- */
 .hidden {
     display: none !important;
 }
@@ -175,89 +193,30 @@ input:focus {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 80px; /* Space for nav */
+    justify-content: center;
 }
 
-.glass-nav {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 800px;
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(15px);
-    padding: 15px 25px;
-    border-radius: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    color: #333;
-    z-index: 10;
-}
-
-#back-btn {
-    background: none;
-    border: none;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    color: #333;
+.nav-container {
+    margin-bottom: 30px;
 }
 
 .glass-panel-large {
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(30px);
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 24px;
     padding: 40px;
-    width: 90%;
-    max-width: 800px;
-    height: 80vh;
-    overflow-y: auto; /* Allows scrolling */
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
+    max-height: 60vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-h2 {
-    margin-bottom: 10px;
-    color: #222;
-}
-
-/* IMAGE HANDLING */
-.image-gallery {
-    margin: 20px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.gallery-img {
-    width: 100%;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.placeholder-box {
-    width: 100%;
-    height: 200px;
-    border: 2px dashed rgba(0,0,0,0.2);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(0,0,0,0.5);
-    font-weight: 500;
-}
-
-textarea {
-    width: 100%;
-    height: 150px;
-    margin-top: 20px;
-    background: rgba(255,255,255,0.5);
-    border: none;
-    padding: 20px;
-    border-radius: 12px;
-    font-size: 1rem;
-    resize: none;
-    outline: none;
+.test-text {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #444;
+    word-spacing: 5px;
 }
