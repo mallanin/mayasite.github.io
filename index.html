@@ -1,166 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Password</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      background: conic-gradient(
-        from 210deg,
-        hsl(222 47% 11%),
-        hsl(247 53% 21%),
-        hsl(200 70% 35%),
-        hsl(222 47% 11%)
-      );
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #e5e7eb;
-      position: relative;
-    }
-
-    .hint {
-      position: fixed;
-      top: 14px;
-      left: 16px;
-      font-size: 0.7rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(209, 213, 219, 0.7);
-      animation: breathe 3s ease-in-out infinite;
-      pointer-events: none;
-      user-select: none;
-      white-space: nowrap;
-    }
-
-    @keyframes breathe {
-      0%, 100% { opacity: 0.3; transform: translateY(0); }
-      50% { opacity: 0.95; transform: translateY(-2px); }
-    }
-
-    .shell {
-      width: 100%;
-      padding: 24px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .pill {
-      width: 100%;
-      max-width: 420px;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 999px;
-      padding: 10px 10px 10px 18px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      box-shadow: 0 22px 45px rgba(15, 23, 42, 0.9);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: #9ca3af;
-      flex-shrink: 0;
-    }
-
-    input[type="password"] {
-      border: none;
-      background: transparent;
-      color: #e5e7eb;
-      outline: none;
-      font-size: 0.95rem;
-      flex: 1;
-    }
-
-    input[type="password"]::placeholder {
-      color: #6b7280;
-    }
-
-    button {
-      border: none;
-      border-radius: 999px;
-      padding: 8px 16px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      background: #22c55e;
-      color: #022c22;
-      box-shadow: 0 10px 20px rgba(34, 197, 94, 0.6);
-      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
-      flex-shrink: 0;
-    }
-
-    button:hover {
-      background: #16a34a;
-      transform: translateY(-1px);
-    }
-
-    button:active {
-      transform: translateY(0);
-      box-shadow: none;
-    }
-
-    #error {
-      text-align: center;
-      margin-top: 0.8rem;
-      font-size: 0.8rem;
-      color: #fecaca;
-      min-height: 1.2em;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="hint">leave and forget this site it its not chistmas yet</div>
 
-  <div class="shell">
-    <form id="password-form" style="width:100%;max-width:420px;">
-      <div class="pill">
-        <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="••••••••"
-          autocomplete="off"
-          required
-        />
-        <button type="submit">Enter</button>
-      </div>
-      <p id="error" aria-live="polite"></p>
-    </form>
-  </div>
+    <div id="login-page" class="container">
+        <div class="login-wrapper">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter..." autofocus>
+            <div id="error-msg" class="hidden">Incorrect</div>
+        </div>
+    </div>
 
-  <script>
-    const correctPassword = "mayapapaya";
+    <div id="content-page" class="container hidden">
+        <button id="back-btn">← Back</button>
+        <textarea placeholder="test"></textarea>
+    </div>
 
-    const form = document.getElementById("password-form");
-    const input = document.getElementById("password");
-    const errorEl = document.getElementById("error");
-
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      const value = input.value.trim();
-
-      if (value === correctPassword) {
-        window.location.href = "second.html";
-      } else {
-        errorEl.textContent = "Incorrect password. Try again.";
-        input.value = "";
-        input.focus();
-      }
-    });
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>
