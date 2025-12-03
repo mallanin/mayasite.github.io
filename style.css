@@ -23,7 +23,7 @@ function checkPassword() {
 }
 
 function triggerShake() {
-    // Add shake class
+    // Add shake class to the input wrapper or input itself
     passwordInput.parentElement.classList.add('shake');
     errorMsg.classList.add('visible');
     
@@ -50,11 +50,12 @@ backBtn.addEventListener('click', () => {
     contentPage.classList.add('hidden');
     loginPage.classList.remove('hidden');
     
-    // Small delay to allow fade in
+    // Reset login page state
     setTimeout(() => {
         loginPage.style.opacity = '1';
     }, 10);
     
     passwordInput.value = '';
+    errorMsg.classList.remove('visible'); // Ensure error is gone
     passwordInput.focus();
 });
