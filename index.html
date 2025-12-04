@@ -307,11 +307,14 @@
       #letter-card.collapsed {
         padding: 18px 24px;
         max-height: 82px;
+        display: flex;
+        align-items: center;
       }
 
       #letter-card.expanded {
         padding: 30px 26px 30px;
         max-height: 800px;
+        display: block;
       }
 
       #letter-content {
@@ -331,6 +334,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        width: 100%;
       }
 
       #letter-top-label {
@@ -339,6 +343,10 @@
         text-transform: uppercase;
         color: rgba(0, 0, 0, 0.5);
         margin-bottom: 10px;
+      }
+
+      #letter-card.collapsed #letter-top-label {
+        margin-bottom: 0;
       }
 
       #letter-arrow {
@@ -385,10 +393,6 @@
         button {
           width: 100%;
           text-align: center;
-        }
-
-        #letter-card {
-          padding: 24px 18px 26px;
         }
       }
     </style>
@@ -534,12 +538,13 @@
           error.textContent = message || "";
         }
 
+        // New maze generator: shorter main path, more side branches
         function buildMaze() {
           mazeData = [];
           for (var y = 0; y < mazeSize; y++) {
             mazeData[y] = [];
             for (var x = 0; x < mazeSize; x++) {
-              mazeData[y][x] = 0; // wall by default
+              mazeData[y][x] = 0; // wall
             }
           }
 
@@ -547,18 +552,63 @@
             return x >= 0 && x < mazeSize && y >= 0 && y < mazeSize;
           }
 
-          var stack = [];
-          var startX = 0;
-          var startY = 0;
-          mazeData[startY][startX] = 1;
-          stack.push({ x: startX, y: startY });
+          function carveCell(x, y) {
+            if (inBounds(x, y)) {
+              mazeData[y][x] = 1;
+            }
+          }
 
-          while (stack.length > 0) {
-            var current = stack[stack.length - 1];
-            var cx = current.x;
-            var cy = current.y;
+          var path = [];
+          var x = 0;
+          var y = 0;
+          carveCell(x, y);
+          path.push({ x: x, y: y });
 
-            var neighbors = [];
+          // Carve a generally direct path from start to goal
+          while (x < mazeSize - 1 || y < mazeSize - 1) {
+            var dirs = [];
+            if (x <= mazeSize - 3) dirs.push({ dx: 2, dy: 0 }); // right
+            if (y <= mazeSize - 3) dirs.push({ dx: 0, dy: 2 }); // down
+
+            if (dirs.length === 0) break;
+
+            var choice = dirs[Math.floor(Math.random() * dirs.length)];
+            var mx = x + choice.dx / 2;
+            var my = y + choice.dy / 2;
+            var nx = x + choice.dx;
+            var ny = y + choice.dy;
+
+            carveCell(mx, my);
+            carveCell(nx, ny);
+            x = nx;
+            y = ny;
+            path.push({ x: x, y: y });
+          }
+
+          // Ensure we actually reach the bottom-right corner
+          while (x <= mazeSize - 3) {
+            var mxr = x + 1;
+            var nxr = x + 2;
+            carveCell(mxr, y);
+            carveCell(nxr, y);
+            x = nxr;
+            path.push({ x: x, y: y });
+          }
+          while (y <= mazeSize - 3) {
+            var myd = y + 1;
+            var nyd = y + 2;
+            carveCell(x, myd);
+            carveCell(x, nyd);
+            y = nyd;
+            path.push({ x: x, y: y });
+          }
+
+          carveCell(mazeSize - 1, mazeSize - 1);
+
+          // Add branchy dead ends off the main path
+          function carveBranchFrom(cx, cy, depth) {
+            if (depth <= 0) return;
+
             var dirs = [
               { dx: 2, dy: 0 },
               { dx: -2, dy: 0 },
@@ -566,31 +616,45 @@
               { dx: 0, dy: -2 },
             ];
 
-            for (var i = 0; i < dirs.length; i++) {
-              var nx = cx + dirs[i].dx;
-              var ny = cy + dirs[i].dy;
-              if (inBounds(nx, ny) && mazeData[ny][nx] === 0) {
-                neighbors.push({
-                  x: nx,
-                  y: ny,
-                  mx: cx + dirs[i].dx / 2,
-                  my: cy + dirs[i].dy / 2,
-                });
-              }
+            // Shuffle directions
+            for (var i = dirs.length - 1; i > 0; i--) {
+              var j = Math.floor(Math.random() * (i + 1));
+              var tmp = dirs[i];
+              dirs[i] = dirs[j];
+              dirs[j] = tmp;
             }
 
-            if (neighbors.length === 0) {
-              stack.pop();
-            } else {
-              var choice = neighbors[Math.floor(Math.random() * neighbors.length)];
-              mazeData[choice.my][choice.mx] = 1;
-              mazeData[choice.y][choice.x] = 1;
-              stack.push({ x: choice.x, y: choice.y });
+            for (var k = 0; k < dirs.length; k++) {
+              var dx = dirs[k].dx;
+              var dy = dirs[k].dy;
+              var nx = cx + dx;
+              var ny = cy + dy;
+              var mx = cx + dx / 2;
+              var my = cy + dy / 2;
+
+              if (!inBounds(nx, ny)) continue;
+              if (mazeData[ny][nx] === 1) continue; // already open, skip to avoid lots of loops
+
+              carveCell(mx, my);
+              carveCell(nx, ny);
+
+              carveBranchFrom(nx, ny, depth - 1);
+
+              // Sometimes stop after first direction to keep branches slender
+              if (Math.random() < 0.5) {
+                break;
+              }
             }
           }
 
-          // Ensure goal cell is open
-          mazeData[mazeSize - 1][mazeSize - 1] = 1;
+          // Spawn branches from some of the main path cells
+          for (var p = 0; p < path.length; p++) {
+            if (Math.random() < 0.4) {
+              var cell = path[p];
+              var branchDepth = 3 + Math.floor(Math.random() * 4); // 3–6
+              carveBranchFrom(cell.x, cell.y, branchDepth);
+            }
+          }
         }
 
         function renderMaze() {
