@@ -263,17 +263,10 @@
         gap: 16px;
       }
 
-      #top-controls {
+      #back-button {
         position: absolute;
         top: 18px;
         left: 18px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      #back-button,
-      #export-button {
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -289,22 +282,43 @@
         font-size: 0.95rem;
       }
 
-      #export-button span:first-child {
-        font-size: 0.9rem;
-      }
-
       #letter-card {
         margin: 4px auto 10px auto;
         width: 100%;
         max-width: 640px;
-        min-height: 340px;
-        padding: 30px 26px 30px;
         border-radius: 22px;
         background: #fdf4ec;
         color: #2a1c16;
         box-shadow: 0 22px 40px rgba(0, 0, 0, 0.45);
         border: 1px solid rgba(139, 105, 82, 0.18);
         font-family: "Lora", "Georgia", "Times New Roman", serif;
+        overflow: hidden;
+        cursor: pointer;
+        transition: max-height 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+          padding 0.4s ease-out, box-shadow 0.3s ease-out;
+      }
+
+      #letter-card.collapsed {
+        padding: 18px 24px;
+        max-height: 82px;
+      }
+
+      #letter-card.expanded {
+        padding: 30px 26px 30px;
+        max-height: 800px;
+      }
+
+      #letter-content {
+        margin-top: 10px;
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 0.35s ease-out 0.1s,
+          transform 0.35s ease-out 0.1s;
+      }
+
+      #letter-card.expanded #letter-content {
+        opacity: 1;
+        transform: translateY(0);
       }
 
       #letter-top-label {
@@ -348,10 +362,6 @@
         button {
           width: 100%;
           text-align: center;
-        }
-
-        #letter-card {
-          padding: 24px 18px 26px;
         }
       }
     </style>
@@ -426,39 +436,41 @@
       <!-- PAGE TWO: LETTER VIEW -->
       <section id="content-view" class="glass-card">
         <div id="content-shell">
-          <div id="top-controls">
-            <button id="back-button" type="button">
-              <span>&larr;</span>
-              <span>Back</span>
-            </button>
-            <button id="export-button" type="button">
-              <span>⤴︎</span>
-              <span>Export</span>
-            </button>
-          </div>
-          <div id="letter-card">
+          <button id="back-button" type="button">
+            <span>&larr;</span>
+            <span>Back</span>
+          </button>
+          <div
+            id="letter-card"
+            class="collapsed"
+            role="button"
+            aria-expanded="false"
+            tabindex="0"
+          >
             <div id="letter-top-label">For Maya</div>
-            <h2 id="letter-heading">Hi love,</h2>
-            <div id="letter-body">
-              <p>
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-              </p>
-              <p>
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-                test test test test test test test test test test test test test test
-              </p>
+            <div id="letter-content">
+              <h2 id="letter-heading">Hi love,</h2>
+              <div id="letter-body">
+                <p>
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                </p>
+                <p>
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                  test test test test test test test test test test test test test
+                </p>
+              </div>
+              <p id="letter-signoff">— Milo</p>
             </div>
-            <p id="letter-signoff">— Milo</p>
           </div>
         </div>
       </section>
@@ -473,7 +485,7 @@
         var loginView = document.getElementById("login-view");
         var contentView = document.getElementById("content-view");
         var backButton = document.getElementById("back-button");
-        var exportButton = document.getElementById("export-button");
+        var letterCard = document.getElementById("letter-card");
 
         // Hint / maze elements
         var hintToggle = document.getElementById("hint-toggle");
@@ -634,33 +646,31 @@
           input.focus();
         });
 
-        function exportLetter() {
-          var headingEl = document.getElementById("letter-heading");
-          var bodyEls = document.querySelectorAll("#letter-body p");
-          var signoffEl = document.getElementById("letter-signoff");
-
-          var heading = headingEl ? headingEl.textContent.trim() : "";
-          var parts = [];
-          bodyEls.forEach(function (p) {
-            parts.push(p.textContent.trim());
-          });
-          var bodyText = parts.join("\n\n");
-          var signoff = signoffEl ? signoffEl.textContent.trim() : "";
-
-          var fullBody = heading + "\n\n" + bodyText + "\n\n" + signoff;
-          var subject = "A note for you";
-
-          var mailto =
-            "mailto:?subject=" +
-            encodeURIComponent(subject) +
-            "&body=" +
-            encodeURIComponent(fullBody);
-
-          window.location.href = mailto;
+        function toggleLetter() {
+          if (!letterCard) return;
+          var isCollapsed = letterCard.classList.contains("collapsed");
+          if (isCollapsed) {
+            letterCard.classList.remove("collapsed");
+            letterCard.classList.add("expanded");
+            letterCard.setAttribute("aria-expanded", "true");
+          } else {
+            letterCard.classList.remove("expanded");
+            letterCard.classList.add("collapsed");
+            letterCard.setAttribute("aria-expanded", "false");
+          }
         }
 
-        if (exportButton) {
-          exportButton.addEventListener("click", exportLetter);
+        if (letterCard) {
+          letterCard.addEventListener("click", function () {
+            toggleLetter();
+          });
+
+          letterCard.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              toggleLetter();
+            }
+          });
         }
 
         // Hint toggle / game init
