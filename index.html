@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -22,15 +22,21 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 24px 0;
         font-family: system-ui, -apple-system, BlinkMacSystemFont,
           "SF Pro Text", "Segoe UI", sans-serif;
         background: radial-gradient(circle at 0% 0%, #ff9a9e 0, transparent 55%),
           radial-gradient(circle at 100% 0%, #fad0c4 0, transparent 55%),
           radial-gradient(circle at 0% 100%, #fbc2eb 0, transparent 55%),
           radial-gradient(circle at 100% 100%, #a18cd1 0, transparent 55%),
-          linear-gradient(135deg, #f6d365 0%, #fda085 25%, #fbc2eb 60%, #a18cd1 100%);
+          linear-gradient(135deg, #f6d365 0, #fda085 25%, #fbc2eb 60%, #a18cd1 100%);
         color: #ffffff;
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      body.hint-open {
+        align-items: flex-start;
       }
 
       main {
@@ -53,7 +59,7 @@
       /* PAGE ONE: PASSWORD VIEW */
 
       #login-view {
-        max-width: 420px;
+        max-width: 460px;
         margin: 0 auto;
         padding: 28px 24px 24px;
       }
@@ -121,6 +127,126 @@
         text-align: left;
       }
 
+      /* Hint / mini-game section */
+
+      #hint-section {
+        margin-top: 18px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.25);
+      }
+
+      #hint-toggle {
+        font-size: 0.8rem;
+        padding: 6px 14px;
+        background: rgba(0, 0, 0, 0.22);
+        color: #ffffff;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+      }
+
+      #hint-toggle:hover {
+        background: rgba(0, 0, 0, 0.32);
+      }
+
+      #hint-game {
+        margin-top: 12px;
+        padding: 0 10px;
+        border-radius: 18px;
+        background: rgba(0, 0, 0, 0.34);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transform: translateY(-8px);
+        transition: max-height 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+          opacity 0.4s ease-out,
+          transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+          padding 0.4s ease-out;
+        pointer-events: none;
+      }
+
+      #hint-game.open {
+        padding: 10px 10px 12px;
+        max-height: 600px;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      #hint-game-intro {
+        font-size: 0.78rem;
+        text-align: center;
+        opacity: 0.85;
+      }
+
+      #maze-container {
+        margin-top: 8px;
+        display: flex;
+        justify-content: center;
+      }
+
+      #maze-grid {
+        display: grid;
+        grid-template-columns: repeat(25, 12px);
+        grid-auto-rows: 12px;
+        gap: 2px;
+      }
+
+      .maze-cell {
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45) inset;
+      }
+
+      .maze-wall {
+        background: rgba(0, 0, 0, 0.6);
+        box-shadow: none;
+      }
+
+      .maze-player {
+        background: #ffffff;
+        box-shadow: 0 0 0 2px rgba(161, 140, 209, 0.9);
+      }
+
+      .maze-goal {
+        background: rgba(253, 160, 133, 0.95);
+      }
+
+      #maze-controls {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .maze-ctrl-row {
+        display: flex;
+        gap: 6px;
+      }
+
+      .maze-ctrl {
+        padding: 4px 10px;
+        font-size: 0.8rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        background: rgba(0, 0, 0, 0.2);
+        color: #ffffff;
+        cursor: pointer;
+      }
+
+      .maze-ctrl:hover {
+        background: rgba(0, 0, 0, 0.32);
+      }
+
+      #maze-hint-text {
+        margin-top: 6px;
+        font-size: 0.8rem;
+        text-align: center;
+        color: #ffeac7;
+        min-height: 1.2em;
+      }
+
       /* PAGE TWO: LETTER VIEW */
 
       #content-view {
@@ -128,16 +254,29 @@
       }
 
       #content-shell {
-        padding: 18px 18px 20px;
+        position: relative;
+        padding: 56px 18px 24px;
         max-height: 70vh;
         overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
 
-      #back-button {
+      #top-controls {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #back-button,
+      #export-button {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        margin-bottom: 16px;
         background: rgba(0, 0, 0, 0.3);
         border-radius: 999px;
         border: 1px solid rgba(255, 255, 255, 0.4);
@@ -150,134 +289,51 @@
         font-size: 0.95rem;
       }
 
-      #letter-layout {
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
+      #export-button span:first-child {
+        font-size: 0.9rem;
       }
 
-      #envelope-wrapper {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 4px;
-        perspective: 1000px;
+      #letter-card {
+        margin: 4px auto 10px auto;
+        width: 100%;
+        max-width: 640px;
+        min-height: 340px;
+        padding: 30px 26px 30px;
+        border-radius: 22px;
+        background: #fdf4ec;
+        color: #2a1c16;
+        box-shadow: 0 22px 40px rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(139, 105, 82, 0.18);
+        font-family: "Lora", "Georgia", "Times New Roman", serif;
       }
 
-      #envelope {
-        position: relative;
-        width: 320px;
-        height: 220px;
-        transform-style: preserve-3d;
-        transition: transform 0.25s ease-out;
-        will-change: transform;
+      #letter-top-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.5);
+        margin-bottom: 10px;
       }
 
-      .envelope-base {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(145deg, #fdf9f4, #ebe1d4);
-        border-radius: 16px;
-        border: 1px solid rgba(0, 0, 0, 0.18);
-        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.4);
-        overflow: hidden;
-        z-index: 1;
+      #letter-heading {
+        font-size: 1.4rem;
+        margin-bottom: 12px;
       }
 
-      .envelope-base::before {
-        content: "";
-        position: absolute;
-        inset: 20px 18px 24px 18px;
-        border-radius: 10px;
-        border: 1px solid rgba(0, 0, 0, 0.06);
-        background:
-          radial-gradient(
-            circle at 20% 0%,
-            rgba(255, 255, 255, 0.9),
-            transparent 55%
-          ),
-          radial-gradient(
-            circle at 80% 100%,
-            rgba(214, 196, 170, 0.7),
-            transparent 55%
-          );
-        opacity: 0.9;
-      }
-
-      .envelope-letter {
-        position: absolute;
-        inset: 26px 28px 86px 28px;
-        border-radius: 12px;
-        border: 1px solid rgba(0, 0, 0, 0.04);
-        background: transparent;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 5;
-        pointer-events: none;
-      }
-
-      .envelope-address {
-        font-family: "Caveat", "Segoe Print", "Bradley Hand", system-ui,
-          -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
-          sans-serif;
-        font-size: 1.15rem;
-        line-height: 1.4;
-        color: #3a2b24;
-        text-align: left;
-      }
-
-      .envelope-address p + p {
-        margin-top: 0.2rem;
-      }
-
-      .envelope-address span {
-        font-weight: 600;
-      }
-
-      #envelope-flap {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(145deg, #f7f0e5, #e4d7c7);
-        border-top-left-radius: 16px;
-        border-top-right-radius: 16px;
-        clip-path: polygon(0 0, 100% 0, 50% 78%);
-        transform-origin: top center;
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
-        transform: rotateX(0deg);
-        z-index: 4;
-      }
-
-      #text-card {
-        position: absolute;
-        left: 26px;
-        right: 26px;
-        bottom: 18px;
-        padding: 22px 24px 26px;
-        border-radius: 18px;
-        background: #fdfbf7;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        font-family: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont,
-          "Segoe UI", sans-serif;
+      #letter-body {
         font-size: 0.98rem;
         line-height: 1.7;
-        color: #2b1f1c;
-        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
-        background-image: linear-gradient(
-          to bottom,
-          rgba(0, 0, 0, 0.06) 1px,
-          transparent 1px
-        );
-        background-size: 100% 30px;
-        transform: translateY(40%);
-        opacity: 0;
-        transition: transform 0.35s ease-out, opacity 0.35s ease-out;
-        z-index: 3;
-        max-height: 180px;
-        overflow-y: auto;
+        color: #3a2820;
       }
 
-      #text-card p + p {
+      #letter-body p + p {
         margin-top: 1rem;
+      }
+
+      #letter-signoff {
+        margin-top: 20px;
+        text-align: right;
+        font-style: italic;
       }
 
       @media (max-width: 600px) {
@@ -293,12 +349,16 @@
           width: 100%;
           text-align: center;
         }
+
+        #letter-card {
+          padding: 24px 18px 26px;
+        }
       }
     </style>
   </head>
   <body>
     <main>
-      <!-- PAGE ONE: PASSWORD INPUT -->
+      <!-- PAGE ONE: PASSWORD INPUT + MINI MAZE HINT -->
       <section id="login-view" class="glass-card">
         <form id="password-form">
           <div class="input-row">
@@ -312,58 +372,93 @@
           </div>
           <p id="error-message"></p>
         </form>
-      </section>
 
-      <!-- PAGE TWO: CONTENT VIEW -->
-      <section id="content-view" class="glass-card">
-        <div id="content-shell">
-          <button id="back-button" type="button">
-            <span>&larr;</span>
-            <span>Back</span>
-          </button>
-          <div id="letter-layout">
-            <div id="envelope-wrapper">
-              <div id="envelope">
-                <div class="envelope-base"></div>
-                <div class="envelope-letter">
-                  <div class="envelope-address">
-                    <p>To: <span>Maya K</span></p>
-                    <p>From: <span>Milo G</span></p>
-                  </div>
-                </div>
-                <div id="text-card">
-                  <p>
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                  </p>
-                  <p>
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                    test test test test test test test test test test test test test
-                  </p>
-                </div>
-                <div id="envelope-flap"></div>
+        <div id="hint-section">
+          <button id="hint-toggle" type="button">Want a hint?</button>
+          <div id="hint-game" aria-hidden="true">
+            <p id="hint-game-intro">
+              Guide the dot through the maze to unlock a hint.
+            </p>
+            <div id="maze-container">
+              <div id="maze-grid"></div>
+            </div>
+            <div id="maze-controls">
+              <button
+                type="button"
+                class="maze-ctrl"
+                data-dir="up"
+                aria-label="Move up"
+              >
+                ↑
+              </button>
+              <div class="maze-ctrl-row">
+                <button
+                  type="button"
+                  class="maze-ctrl"
+                  data-dir="left"
+                  aria-label="Move left"
+                >
+                  ←
+                </button>
+                <button
+                  type="button"
+                  class="maze-ctrl"
+                  data-dir="down"
+                  aria-label="Move down"
+                >
+                  ↓
+                </button>
+                <button
+                  type="button"
+                  class="maze-ctrl"
+                  data-dir="right"
+                  aria-label="Move right"
+                >
+                  →
+                </button>
               </div>
             </div>
+            <p id="maze-hint-text"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE TWO: LETTER VIEW -->
+      <section id="content-view" class="glass-card">
+        <div id="content-shell">
+          <div id="top-controls">
+            <button id="back-button" type="button">
+              <span>&larr;</span>
+              <span>Back</span>
+            </button>
+            <button id="export-button" type="button">
+              <span>⤴︎</span>
+              <span>Export</span>
+            </button>
+          </div>
+          <div id="letter-card">
+            <div id="letter-top-label">For Maya</div>
+            <h2 id="letter-heading">Hi love,</h2>
+            <div id="letter-body">
+              <p>
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+              </p>
+              <p>
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+                test test test test test test test test test test test test test test
+              </p>
+            </div>
+            <p id="letter-signoff">— Milo</p>
           </div>
         </div>
       </section>
@@ -378,83 +473,140 @@
         var loginView = document.getElementById("login-view");
         var contentView = document.getElementById("content-view");
         var backButton = document.getElementById("back-button");
-        var contentShell = document.getElementById("content-shell");
-        var envelopeFlap = document.getElementById("envelope-flap");
-        var textCard = document.getElementById("text-card");
-        var envelope = document.getElementById("envelope");
-        var envelopeWrapper = document.getElementById("envelope-wrapper");
-        var wrongAttempts = 0;
+        var exportButton = document.getElementById("export-button");
+
+        // Hint / maze elements
+        var hintToggle = document.getElementById("hint-toggle");
+        var hintGame = document.getElementById("hint-game");
+        var mazeGrid = document.getElementById("maze-grid");
+        var mazeHintText = document.getElementById("maze-hint-text");
+        var mazeControls = document.querySelectorAll(".maze-ctrl");
+
+        var mazeSize = 25;
+        var mazeData = [];
+        var playerPos = { x: 0, y: 0 };
+        var goalPos = { x: mazeSize - 1, y: mazeSize - 1 };
+        var hintUnlocked = false;
 
         function showError(message) {
           error.textContent = message || "";
         }
 
-        function updateLetterAnimation() {
-          if (!contentShell || !envelopeFlap || !textCard) return;
-
-          var maxScroll = 260;
-          var scrollTop = contentShell.scrollTop || 0;
-          var progress = scrollTop / maxScroll;
-
-          if (progress < 0) progress = 0;
-          if (progress > 1) progress = 1;
-
-          // Phase 1: flap opening (0 -> ~40% of scroll)
-          var flapPhase = Math.min(progress / 0.4, 1);
-          var flapAngle = -165 * flapPhase;
-          envelopeFlap.style.transform = "rotateX(" + flapAngle + "deg)";
-
-          // Phase 2: card rising out of the envelope (starts a bit later)
-          var cardPhase = 0;
-          if (progress > 0.25) {
-            cardPhase = (progress - 0.25) / 0.75;
-            if (cardPhase > 1) cardPhase = 1;
+        function buildMaze() {
+          mazeData = [];
+          for (var y = 0; y < mazeSize; y++) {
+            mazeData[y] = [];
+            for (var x = 0; x < mazeSize; x++) {
+              mazeData[y][x] = 0; // wall by default
+            }
           }
 
-          // Subtle Apple-ish ease-out on the card motion
-          var easedCardPhase = cardPhase;
-          if (easedCardPhase > 0 && easedCardPhase < 1) {
-            easedCardPhase = 1 - Math.pow(1 - easedCardPhase, 3);
+          function inBounds(x, y) {
+            return x >= 0 && x < mazeSize && y >= 0 && y < mazeSize;
           }
 
-          var startY = 40; // mostly hidden inside
-          var endY = -65; // fully out, floating above
-          var currentY = startY + (endY - startY) * easedCardPhase;
-          var cardOpacity = easedCardPhase;
+          var stack = [];
+          var startX = 0;
+          var startY = 0;
+          mazeData[startY][startX] = 1;
+          stack.push({ x: startX, y: startY });
 
-          textCard.style.transform = "translateY(" + currentY + "%)";
-          textCard.style.opacity = cardOpacity;
+          while (stack.length > 0) {
+            var current = stack[stack.length - 1];
+            var cx = current.x;
+            var cy = current.y;
+
+            var neighbors = [];
+            var dirs = [
+              { dx: 2, dy: 0 },
+              { dx: -2, dy: 0 },
+              { dx: 0, dy: 2 },
+              { dx: 0, dy: -2 },
+            ];
+
+            for (var i = 0; i < dirs.length; i++) {
+              var nx = cx + dirs[i].dx;
+              var ny = cy + dirs[i].dy;
+              if (inBounds(nx, ny) && mazeData[ny][nx] === 0) {
+                neighbors.push({
+                  x: nx,
+                  y: ny,
+                  mx: cx + dirs[i].dx / 2,
+                  my: cy + dirs[i].dy / 2,
+                });
+              }
+            }
+
+            if (neighbors.length === 0) {
+              stack.pop();
+            } else {
+              var choice = neighbors[Math.floor(Math.random() * neighbors.length)];
+              mazeData[choice.my][choice.mx] = 1;
+              mazeData[choice.y][choice.x] = 1;
+              stack.push({ x: choice.x, y: choice.y });
+            }
+          }
+
+          // Ensure goal cell is open
+          mazeData[mazeSize - 1][mazeSize - 1] = 1;
         }
 
-        if (contentShell) {
-          contentShell.addEventListener("scroll", updateLetterAnimation);
+        function renderMaze() {
+          if (!mazeGrid) return;
+          mazeGrid.innerHTML = "";
+
+          for (var y = 0; y < mazeData.length; y++) {
+            for (var x = 0; x < mazeData[y].length; x++) {
+              var cell = document.createElement("div");
+              cell.className = "maze-cell";
+
+              if (mazeData[y][x] === 0) {
+                cell.classList.add("maze-wall");
+              } else {
+                if (x === playerPos.x && y === playerPos.y) {
+                  cell.classList.add("maze-player");
+                }
+                if (x === goalPos.x && y === goalPos.y) {
+                  cell.classList.add("maze-goal");
+                }
+              }
+
+              mazeGrid.appendChild(cell);
+            }
+          }
         }
 
-        // Subtle parallax tilt on the envelope (desktop only)
-        function updateEnvelopeTilt(event) {
-          if (!envelopeWrapper || !envelope) return;
-          var rect = envelopeWrapper.getBoundingClientRect();
-          var x = event.clientX - rect.left;
-          var y = event.clientY - rect.top;
-          var percentX = x / rect.width - 0.5;
-          var percentY = y / rect.height - 0.5;
-          var maxTilt = 8;
-          var rotateY = maxTilt * percentX;
-          var rotateX = -maxTilt * percentY;
-          envelope.style.transform =
-            "rotateX(" + rotateX + "deg) rotateY(" + rotateY + "deg)";
+        function showMazeHint() {
+          if (mazeHintText) {
+            mazeHintText.textContent = "Hint: papaya";
+          }
+          hintUnlocked = true;
         }
 
-        function resetEnvelopeTilt() {
-          if (!envelope) return;
-          envelope.style.transform = "rotateX(0deg) rotateY(0deg)";
+        function movePlayer(dx, dy) {
+          var newX = playerPos.x + dx;
+          var newY = playerPos.y + dy;
+
+          if (newY < 0 || newY >= mazeData.length) return;
+          if (newX < 0 || newX >= mazeData[0].length) return;
+          if (mazeData[newY][newX] === 0) return; // wall
+
+          playerPos.x = newX;
+          playerPos.y = newY;
+          renderMaze();
+
+          if (
+            playerPos.x === goalPos.x &&
+            playerPos.y === goalPos.y &&
+            !hintUnlocked
+          ) {
+            showMazeHint();
+          }
         }
 
-        if (window.innerWidth > 700 && envelopeWrapper) {
-          envelopeWrapper.addEventListener("mousemove", updateEnvelopeTilt);
-          envelopeWrapper.addEventListener("mouseleave", resetEnvelopeTilt);
-        }
+        buildMaze();
 
+        // Password form
         form.addEventListener("submit", function (event) {
           event.preventDefault();
           var value = (input.value || "").trim();
@@ -465,26 +617,16 @@
           }
 
           if (value.toLowerCase() === correctPassword) {
-            // Go to second "page"
             loginView.style.display = "none";
             contentView.style.display = "block";
             showError("");
             input.value = "";
-            wrongAttempts = 0;
-            if (contentShell) {
-              contentShell.scrollTop = 0;
-              updateLetterAnimation();
-            }
           } else {
-            wrongAttempts++;
-            if (wrongAttempts >= 1) {
-              showError("Incorrect password. Hint: papaya");
-            } else {
-              showError("Incorrect password.");
-            }
+            showError("Incorrect password.");
           }
         });
 
+        // Back button
         backButton.addEventListener("click", function () {
           contentView.style.display = "none";
           loginView.style.display = "block";
@@ -492,9 +634,93 @@
           input.focus();
         });
 
+        function exportLetter() {
+          var headingEl = document.getElementById("letter-heading");
+          var bodyEls = document.querySelectorAll("#letter-body p");
+          var signoffEl = document.getElementById("letter-signoff");
+
+          var heading = headingEl ? headingEl.textContent.trim() : "";
+          var parts = [];
+          bodyEls.forEach(function (p) {
+            parts.push(p.textContent.trim());
+          });
+          var bodyText = parts.join("\n\n");
+          var signoff = signoffEl ? signoffEl.textContent.trim() : "";
+
+          var fullBody = heading + "\n\n" + bodyText + "\n\n" + signoff;
+          var subject = "A note for you";
+
+          var mailto =
+            "mailto:?subject=" +
+            encodeURIComponent(subject) +
+            "&body=" +
+            encodeURIComponent(fullBody);
+
+          window.location.href = mailto;
+        }
+
+        if (exportButton) {
+          exportButton.addEventListener("click", exportLetter);
+        }
+
+        // Hint toggle / game init
+        if (hintToggle && hintGame) {
+          hintToggle.addEventListener("click", function () {
+            var isOpen = hintGame.classList.contains("open");
+
+            if (isOpen) {
+              hintGame.classList.remove("open");
+              hintGame.setAttribute("aria-hidden", "true");
+              document.body.classList.remove("hint-open");
+              hintToggle.textContent = "Want a hint?";
+            } else {
+              // Reset the maze when opened
+              playerPos = { x: 0, y: 0 };
+              hintUnlocked = false;
+              if (mazeHintText) mazeHintText.textContent = "";
+              renderMaze();
+
+              hintGame.classList.add("open");
+              hintGame.setAttribute("aria-hidden", "false");
+              document.body.classList.add("hint-open");
+              hintToggle.textContent = "Close maze";
+            }
+          });
+        }
+
+        // Maze control buttons
+        mazeControls.forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var dir = btn.getAttribute("data-dir");
+            if (dir === "up") movePlayer(0, -1);
+            else if (dir === "down") movePlayer(0, 1);
+            else if (dir === "left") movePlayer(-1, 0);
+            else if (dir === "right") movePlayer(1, 0);
+          });
+        });
+
+        // Arrow keys for maze (letters remain usable in the password box)
+        window.addEventListener("keydown", function (event) {
+          if (!hintGame || !hintGame.classList.contains("open")) return;
+
+          var key = event.key;
+          if (key === "ArrowUp") {
+            event.preventDefault();
+            movePlayer(0, -1);
+          } else if (key === "ArrowDown") {
+            event.preventDefault();
+            movePlayer(0, 1);
+          } else if (key === "ArrowLeft") {
+            event.preventDefault();
+            movePlayer(-1, 0);
+          } else if (key === "ArrowRight") {
+            event.preventDefault();
+            movePlayer(1, 0);
+          }
+        });
+
         window.addEventListener("DOMContentLoaded", function () {
           input.focus();
-          updateLetterAnimation();
         });
       })();
     </script>
