@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Secret</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
       * {
         box-sizing: border-box;
@@ -43,6 +49,8 @@
         border: 1px solid rgba(255, 255, 255, 0.32);
         box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
       }
+
+      /* PAGE ONE: PASSWORD VIEW */
 
       #login-view {
         max-width: 420px;
@@ -113,12 +121,16 @@
         text-align: left;
       }
 
+      /* PAGE TWO: LETTER VIEW */
+
       #content-view {
         display: none;
       }
 
       #content-shell {
         padding: 18px 18px 20px;
+        max-height: 70vh;
+        overflow-y: auto;
       }
 
       #back-button {
@@ -138,15 +150,128 @@
         font-size: 0.95rem;
       }
 
+      #letter-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      #envelope-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 4px;
+        perspective: 1000px;
+      }
+
+      #envelope {
+        position: relative;
+        width: 320px;
+        height: 220px;
+        transform-style: preserve-3d;
+        transition: transform 0.25s ease-out;
+        will-change: transform;
+      }
+
+      .envelope-base {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(145deg, #fdf9f4, #ebe1d4);
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .envelope-base::before {
+        content: "";
+        position: absolute;
+        inset: 20px 18px 24px 18px;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        background: radial-gradient(
+            circle at 20% 0%,
+            rgba(255, 255, 255, 0.9),
+            transparent 55%
+          ),
+          radial-gradient(
+            circle at 80% 100%,
+            rgba(214, 196, 170, 0.7),
+            transparent 55%
+          );
+        opacity: 0.9;
+      }
+
+      .envelope-letter {
+        position: absolute;
+        inset: 26px 28px 86px 28px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5; /* above flap & card */
+        pointer-events: none;
+      }
+
+      .envelope-address {
+        font-family: "Caveat", "Segoe Print", "Bradley Hand", system-ui,
+          -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+        font-size: 1.15rem;
+        line-height: 1.4;
+        color: #3a2b24;
+        text-align: left;
+      }
+
+      .envelope-address p + p {
+        margin-top: 0.2rem;
+      }
+
+      .envelope-address span {
+        font-weight: 600;
+      }
+
+      #envelope-flap {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(145deg, #f7f0e5, #e4d7c7);
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        clip-path: polygon(0 0, 100% 0, 50% 78%);
+        transform-origin: top center;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
+        transform: rotateX(0deg);
+        z-index: 4;
+      }
+
       #text-card {
-        padding: 22px 22px 26px;
-        border-radius: 20px;
-        background: rgba(0, 0, 0, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.28);
-        max-height: 70vh;
-        overflow-y: auto;
-        font-size: 0.95rem;
+        position: absolute;
+        left: 26px;
+        right: 26px;
+        bottom: 18px;
+        padding: 22px 24px 26px;
+        border-radius: 18px;
+        background: #fdfbf7;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        font-family: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-size: 0.98rem;
         line-height: 1.7;
+        color: #2b1f1c;
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+        background-image: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.06) 1px,
+          transparent 1px
+        );
+        background-size: 100% 30px;
+        transform: translateY(40%);
+        opacity: 0;
+        transition: transform 0.35s ease-out, opacity 0.35s ease-out;
+        z-index: 3;
+        max-height: 180px;
+        overflow-y: auto;
       }
 
       #text-card p + p {
@@ -194,35 +319,49 @@
             <span>&larr;</span>
             <span>Back</span>
           </button>
-          <div id="text-card">
-            <p>
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-            </p>
-            <p>
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-              test test test test test test test test test test test test test test
-            </p>
+          <div id="letter-layout">
+            <div id="envelope-wrapper">
+              <div id="envelope">
+                <div class="envelope-base"></div>
+                <div class="envelope-letter">
+                  <div class="envelope-address">
+                    <p>To: <span>Maya K</span></p>
+                    <p>From: <span>Milo G</span></p>
+                  </div>
+                </div>
+                <div id="text-card">
+                  <p>
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                  </p>
+                  <p>
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                    test test test test test test test test test test test test test test
+                  </p>
+                </div>
+                <div id="envelope-flap"></div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -237,9 +376,81 @@
         var loginView = document.getElementById("login-view");
         var contentView = document.getElementById("content-view");
         var backButton = document.getElementById("back-button");
+        var contentShell = document.getElementById("content-shell");
+        var envelopeFlap = document.getElementById("envelope-flap");
+        var textCard = document.getElementById("text-card");
+        var envelope = document.getElementById("envelope");
+        var envelopeWrapper = document.getElementById("envelope-wrapper");
+        var wrongAttempts = 0;
 
         function showError(message) {
           error.textContent = message || "";
+        }
+
+        function updateLetterAnimation() {
+          if (!contentShell || !envelopeFlap || !textCard) return;
+
+          var maxScroll = 260;
+          var scrollTop = contentShell.scrollTop || 0;
+          var progress = scrollTop / maxScroll;
+
+          if (progress < 0) progress = 0;
+          if (progress > 1) progress = 1;
+
+          // Phase 1: flap opening (0 -> ~40% of scroll)
+          var flapPhase = Math.min(progress / 0.4, 1);
+          var flapAngle = -165 * flapPhase;
+          envelopeFlap.style.transform = "rotateX(" + flapAngle + "deg)";
+
+          // Phase 2: card rising out of the envelope (starts a bit later)
+          var cardPhase = 0;
+          if (progress > 0.25) {
+            cardPhase = (progress - 0.25) / 0.75;
+            if (cardPhase > 1) cardPhase = 1;
+          }
+
+          // Subtle Apple-ish ease-out on the card motion
+          var easedCardPhase = cardPhase;
+          if (easedCardPhase > 0 && easedCardPhase < 1) {
+            easedCardPhase = 1 - Math.pow(1 - easedCardPhase, 3);
+          }
+
+          var startY = 40; // mostly hidden inside
+          var endY = -65; // fully out, floating above
+          var currentY = startY + (endY - startY) * easedCardPhase;
+          var cardOpacity = easedCardPhase;
+
+          textCard.style.transform = "translateY(" + currentY + "%)";
+          textCard.style.opacity = cardOpacity;
+        }
+
+        if (contentShell) {
+          contentShell.addEventListener("scroll", updateLetterAnimation);
+        }
+
+        // Subtle parallax tilt on the envelope (desktop only)
+        function updateEnvelopeTilt(event) {
+          if (!envelopeWrapper || !envelope) return;
+          var rect = envelopeWrapper.getBoundingClientRect();
+          var x = event.clientX - rect.left;
+          var y = event.clientY - rect.top;
+          var percentX = x / rect.width - 0.5;
+          var percentY = y / rect.height - 0.5;
+          var maxTilt = 8;
+          var rotateY = maxTilt * percentX;
+          var rotateX = -maxTilt * percentY;
+          envelope.style.transform =
+            "rotateX(" + rotateX + "deg) rotateY(" + rotateY + "deg)";
+        }
+
+        function resetEnvelopeTilt() {
+          if (!envelope) return;
+          envelope.style.transform = "rotateX(0deg) rotateY(0deg)";
+        }
+
+        if (window.innerWidth > 700 && envelopeWrapper) {
+          envelopeWrapper.addEventListener("mousemove", updateEnvelopeTilt);
+          envelopeWrapper.addEventListener("mouseleave", resetEnvelopeTilt);
         }
 
         form.addEventListener("submit", function (event) {
@@ -257,8 +468,18 @@
             contentView.style.display = "block";
             showError("");
             input.value = "";
+            wrongAttempts = 0;
+            if (contentShell) {
+              contentShell.scrollTop = 0;
+              updateLetterAnimation();
+            }
           } else {
-            showError("Incorrect password.");
+            wrongAttempts++;
+            if (wrongAttempts >= 1) {
+              showError("Incorrect password. Hint: papaya");
+            } else {
+              showError("Incorrect password.");
+            }
           }
         });
 
@@ -271,6 +492,7 @@
 
         window.addEventListener("DOMContentLoaded", function () {
           input.focus();
+          updateLetterAnimation();
         });
       })();
     </script>
