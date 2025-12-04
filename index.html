@@ -29,7 +29,7 @@
           radial-gradient(circle at 100% 0%, #fad0c4 0, transparent 55%),
           radial-gradient(circle at 0% 100%, #fbc2eb 0, transparent 55%),
           radial-gradient(circle at 100% 100%, #a18cd1 0, transparent 55%),
-          linear-gradient(135deg, #f6d365 0%, #fda085 25%, #fbc2eb 60%, #a18cd1 100%);
+          linear-gradient(135deg, #f6d365 0, #fda085 25%, #fbc2eb 60%, #a18cd1 100%);
         color: #ffffff;
         overflow-x: hidden;
         overflow-y: auto;
@@ -307,14 +307,11 @@
       #letter-card.collapsed {
         padding: 18px 24px;
         max-height: 82px;
-        display: flex;
-        align-items: center;
       }
 
       #letter-card.expanded {
         padding: 30px 26px 30px;
         max-height: 800px;
-        display: block;
       }
 
       #letter-content {
@@ -334,7 +331,6 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        width: 100%;
       }
 
       #letter-top-label {
@@ -342,11 +338,7 @@
         letter-spacing: 0.18em;
         text-transform: uppercase;
         color: rgba(0, 0, 0, 0.5);
-        margin-bottom: 10px;
-      }
-
-      #letter-card.collapsed #letter-top-label {
-        margin-bottom: 0;
+        margin-bottom: 0; /* centered vertically in the bar */
       }
 
       #letter-arrow {
@@ -393,6 +385,10 @@
         button {
           width: 100%;
           text-align: center;
+        }
+
+        #letter-card {
+          padding: 24px 18px 26px;
         }
       }
     </style>
@@ -538,7 +534,7 @@
           error.textContent = message || "";
         }
 
-        // New maze generator: shorter main path, more side branches
+        // Branchy maze: shorter main route with lots of side branches
         function buildMaze() {
           mazeData = [];
           for (var y = 0; y < mazeSize; y++) {
@@ -564,7 +560,7 @@
           carveCell(x, y);
           path.push({ x: x, y: y });
 
-          // Carve a generally direct path from start to goal
+          // Carve a roughly direct path from start to goal using 2-step moves
           while (x < mazeSize - 1 || y < mazeSize - 1) {
             var dirs = [];
             if (x <= mazeSize - 3) dirs.push({ dx: 2, dy: 0 }); // right
@@ -585,7 +581,7 @@
             path.push({ x: x, y: y });
           }
 
-          // Ensure we actually reach the bottom-right corner
+          // Ensure we end at bottom-right
           while (x <= mazeSize - 3) {
             var mxr = x + 1;
             var nxr = x + 2;
@@ -605,7 +601,7 @@
 
           carveCell(mazeSize - 1, mazeSize - 1);
 
-          // Add branchy dead ends off the main path
+          // Carve branchy dead-ends off the main path
           function carveBranchFrom(cx, cy, depth) {
             if (depth <= 0) return;
 
@@ -633,26 +629,24 @@
               var my = cy + dy / 2;
 
               if (!inBounds(nx, ny)) continue;
-              if (mazeData[ny][nx] === 1) continue; // already open, skip to avoid lots of loops
+              if (mazeData[ny][nx] === 1) continue; // already open
 
               carveCell(mx, my);
               carveCell(nx, ny);
 
               carveBranchFrom(nx, ny, depth - 1);
 
-              // Sometimes stop after first direction to keep branches slender
-              if (Math.random() < 0.5) {
-                break;
-              }
+              // Sometimes stop after one direction to keep branches slender
+              if (Math.random() < 0.5) break;
             }
           }
 
-          // Spawn branches from some of the main path cells
+          // Spawn branches from some main-path cells
           for (var p = 0; p < path.length; p++) {
             if (Math.random() < 0.4) {
               var cell = path[p];
-              var branchDepth = 3 + Math.floor(Math.random() * 4); // 3–6
-              carveBranchFrom(cell.x, cell.y, branchDepth);
+              var depth = 3 + Math.floor(Math.random() * 4); // length 3–6
+              carveBranchFrom(cell.x, cell.y, depth);
             }
           }
         }
