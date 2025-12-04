@@ -29,7 +29,7 @@
           radial-gradient(circle at 100% 0%, #fad0c4 0, transparent 55%),
           radial-gradient(circle at 0% 100%, #fbc2eb 0, transparent 55%),
           radial-gradient(circle at 100% 100%, #a18cd1 0, transparent 55%),
-          linear-gradient(135deg, #f6d365 0, #fda085 25%, #fbc2eb 60%, #a18cd1 100%);
+          linear-gradient(135deg, #f6d365 0%, #fda085 25%, #fbc2eb 60%, #a18cd1 100%);
         color: #ffffff;
         overflow-x: hidden;
         overflow-y: auto;
@@ -295,7 +295,13 @@
         overflow: hidden;
         cursor: pointer;
         transition: max-height 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
-          padding 0.4s ease-out, box-shadow 0.3s ease-out;
+          padding 0.4s ease-out, box-shadow 0.3s ease-out,
+          transform 0.2s ease-out;
+      }
+
+      #letter-card:hover {
+        box-shadow: 0 26px 60px rgba(0, 0, 0, 0.55);
+        transform: translateY(-1px);
       }
 
       #letter-card.collapsed {
@@ -321,12 +327,29 @@
         transform: translateY(0);
       }
 
+      #letter-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
       #letter-top-label {
         font-size: 0.7rem;
         letter-spacing: 0.18em;
         text-transform: uppercase;
         color: rgba(0, 0, 0, 0.5);
         margin-bottom: 10px;
+      }
+
+      #letter-arrow {
+        font-size: 0.9rem;
+        color: rgba(0, 0, 0, 0.45);
+        margin-left: 8px;
+        transition: transform 0.3s ease-out;
+      }
+
+      #letter-card.expanded #letter-arrow {
+        transform: rotate(180deg);
       }
 
       #letter-heading {
@@ -362,6 +385,10 @@
         button {
           width: 100%;
           text-align: center;
+        }
+
+        #letter-card {
+          padding: 24px 18px 26px;
         }
       }
     </style>
@@ -447,7 +474,10 @@
             aria-expanded="false"
             tabindex="0"
           >
-            <div id="letter-top-label">For Maya</div>
+            <div id="letter-header-row">
+              <div id="letter-top-label">For Maya</div>
+              <span id="letter-arrow">⌄</span>
+            </div>
             <div id="letter-content">
               <h2 id="letter-heading">Hi love,</h2>
               <div id="letter-body">
@@ -618,7 +648,7 @@
 
         buildMaze();
 
-        // Password form
+        // Password form submit
         form.addEventListener("submit", function (event) {
           event.preventDefault();
           var value = (input.value || "").trim();
@@ -646,6 +676,7 @@
           input.focus();
         });
 
+        // Letter expand/collapse
         function toggleLetter() {
           if (!letterCard) return;
           var isCollapsed = letterCard.classList.contains("collapsed");
